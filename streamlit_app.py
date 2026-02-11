@@ -1,58 +1,28 @@
 import streamlit as st
-import math
 
-st.set_page_config(page_title="Calculadora Solar", page_icon=":sunny:", layout="centered")
+st.set_page_config(page_title="Pago de Luz", page_icon=":bulb:", layout="centered")
 
-st.markdown(
-    """
-    <style>
-      .stApp { background-color: #FFF7E6; }
-      h1, h2, h3, h4, h5, h6 { color: #F57C00; }
-      .stButton>button { background-color: #F57C00; color: white; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("Pronostico de Proximo Pago de Luz")
+st.write("Calcula un estimado simple usando tu ultimo recibo y el consumo del mes.")
 
-st.title("Calculadora Solar y Ahorro")
-st.write("Estima produccion, ahorro y recuperacion de inversion para paneles solares.")
+st.header("Datos de entrada")
+consumo_mes = st.number_input("Consumo del mes (kWh)", min_value=0.0, value=300.0, step=10.0)
+tarifa_kwh = st.number_input("Tarifa por kWh ($)", min_value=0.0, value=0.18, step=0.01, format="%.2f")
+cargo_fijo = st.number_input("Cargo fijo ($)", min_value=0.0, value=5.0, step=1.0)
 
-st.header("1) Datos de tu hogar")
-consumo_mensual = st.number_input("Consumo mensual (kWh)", min_value=0.0, value=300.0, step=10.0)
-tarifa_kwh = st.number_input("Tarifa electrica ($/kWh)", min_value=0.0, value=0.18, step=0.01, format="%.2f")
-
-st.header("2) Datos solares")
-sol_horas = st.number_input("Horas solares pico por dia (promedio)", min_value=0.0, value=5.0, step=0.5)
-eficiencia = st.slider("Eficiencia del sistema (%)", min_value=60, max_value=95, value=80, step=1)
-
-st.header("3) Sistema propuesto")
-capacidad_kw = st.number_input("Tamano del sistema (kW)", min_value=0.0, value=3.0, step=0.5)
-costo_sistema = st.number_input("Costo total del sistema ($)", min_value=0.0, value=6000.0, step=500.0)
+st.header("Ajustes opcionales")
+aumento_pct = st.slider("Aumento esperado (%)", min_value=0, max_value=30, value=0, step=1)
 
 st.divider()
 
-# Calculos
-produccion_diaria = capacidad_kw * sol_horas * (eficiencia / 100.0)
-produccion_mensual = produccion_diaria * 30
-produccion_anual = produccion_diaria * 365
+subtotal = consumo_mes * tarifa_kwh
+subtotal_ajustado = subtotal * (1 + aumento_pct / 100)
 
-ahorro_mensual = min(produccion_mensual, consumo_mensual) * tarifa_kwh
-ahorro_anual = ahorro_mensual * 12
+pago_estimado = subtotal_ajustado + cargo_fijo
 
-if ahorro_anual > 0:
-    payback = costo_sistema / ahorro_anual
-else:
-    payback = math.inf
+st.subheader("Resultado")
+st.write(f"Subtotal por consumo: **${subtotal:.2f}**")
+st.write(f"Subtotal ajustado: **${subtotal_ajustado:.2f}**")
+st.write(f"Pago estimado total: **${pago_estimado:.2f}**")
 
-st.subheader("Resultados")
-st.write(f"Produccion estimada mensual: **{produccion_mensual:.1f} kWh**")
-st.write(f"Produccion estimada anual: **{produccion_anual:.0f} kWh**")
-st.write(f"Ahorro estimado mensual: **${ahorro_mensual:.2f}**")
-st.write(f"Ahorro estimado anual: **${ahorro_anual:.2f}**")
-
-if math.isfinite(payback):
-    st.write(f"Tiempo estimado de recuperacion: **{payback:.1f} anos**")
-else:
-    st.write("Tiempo estimado de recuperacion: **No calculable**")
-
-st.caption("Resultados aproximados. No reemplaza un estudio tecnico real.")
+st.caption("Estimacion simple. No reemplaza el recibo oficial.")
