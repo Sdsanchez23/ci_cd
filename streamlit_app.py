@@ -2,8 +2,8 @@ import streamlit as st
 
 st.set_page_config(page_title="Pago de Luz", page_icon=":bulb:", layout="centered")
 
-st.title("Pronostico de Proximo Pago de Luz")
-st.write("Calcula un estimado simple usando tu ultimo recibo y el consumo del mes.")
+st.title("Pronóstico de Proximo Pago de Luz")
+st.write("Calcula un estimado simple usando tu último recibo y el consumo del mes.")
 
 st.header("Datos de entrada")
 consumo_mes = st.number_input("Consumo del mes (kWh)", min_value=0.0, value=300.0, step=10.0)
